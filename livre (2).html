@@ -1,0 +1,488 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>L'Étranger — Albert Camus</title>
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400&family=Cinzel:wght@400;600&display=swap" rel="stylesheet" />
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --ink: #1a1208;
+      --parchment: #f5efe2;
+      --gold: #c8963e;
+      --gold-light: #e8ba6a;
+      --rust: #8b3a2a;
+      --shadow: rgba(26, 18, 8, 0.18);
+      --cream: #faf6ee;
+    }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      background-color: var(--parchment);
+      color: var(--ink);
+      font-family: 'Cormorant Garamond', serif;
+      min-height: 100vh;
+      overflow-x: hidden;
+    }
+
+    /* Texture overlay */
+    body::before {
+      content: '';
+      position: fixed;
+      inset: 0;
+      background-image:
+        url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='400' height='400'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.75' numOctaves='4' stitchTiles='stitch'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3C/filter%3E%3Crect width='400' height='400' filter='url(%23n)' opacity='0.04'/%3E%3C/svg%3E");
+      pointer-events: none;
+      z-index: 0;
+      opacity: 0.6;
+    }
+
+    /* ── HEADER ── */
+    header {
+      position: relative;
+      text-align: center;
+      padding: 70px 20px 50px;
+      border-bottom: 1px solid rgba(200, 150, 62, 0.35);
+      overflow: hidden;
+    }
+
+    header::after {
+      content: '';
+      position: absolute;
+      bottom: -1px; left: 50%; transform: translateX(-50%);
+      width: 120px; height: 2px;
+      background: linear-gradient(90deg, transparent, var(--gold), transparent);
+    }
+
+    .site-label {
+      font-family: 'Cinzel', serif;
+      font-size: 0.68rem;
+      letter-spacing: 0.35em;
+      color: var(--gold);
+      text-transform: uppercase;
+      margin-bottom: 18px;
+      opacity: 0;
+      animation: fadeUp 0.8s 0.1s ease forwards;
+    }
+
+    .header-title {
+      font-family: 'Cinzel', serif;
+      font-size: clamp(2.2rem, 5vw, 3.6rem);
+      font-weight: 600;
+      color: var(--ink);
+      letter-spacing: 0.06em;
+      line-height: 1.1;
+      opacity: 0;
+      animation: fadeUp 0.8s 0.25s ease forwards;
+    }
+
+    .header-author {
+      font-family: 'Cormorant Garamond', serif;
+      font-style: italic;
+      font-size: 1.3rem;
+      color: var(--rust);
+      margin-top: 12px;
+      opacity: 0;
+      animation: fadeUp 0.8s 0.4s ease forwards;
+    }
+
+    /* ── MAIN ── */
+    main {
+      position: relative;
+      z-index: 1;
+      max-width: 1100px;
+      margin: 0 auto;
+      padding: 60px 24px 80px;
+    }
+
+    /* ── BOOK CARD ── */
+    .book-card {
+      display: grid;
+      grid-template-columns: 260px 1fr;
+      gap: 56px;
+      align-items: start;
+      opacity: 0;
+      animation: fadeUp 0.9s 0.55s ease forwards;
+    }
+
+    @media (max-width: 720px) {
+      .book-card { grid-template-columns: 1fr; gap: 36px; }
+    }
+
+    /* ── COVER ── */
+    .cover-wrapper {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 20px;
+    }
+
+    .cover-frame {
+      position: relative;
+      width: 220px;
+    }
+
+    .cover-frame::before {
+      content: '';
+      position: absolute;
+      inset: -8px;
+      border: 1px solid var(--gold);
+      opacity: 0.5;
+      pointer-events: none;
+    }
+
+    .cover-frame::after {
+      content: '';
+      position: absolute;
+      inset: -14px;
+      border: 1px solid var(--gold);
+      opacity: 0.2;
+      pointer-events: none;
+    }
+
+    .cover-img {
+      width: 220px;
+      height: 310px;
+      object-fit: cover;
+      display: block;
+      box-shadow: 6px 10px 36px var(--shadow);
+      /* Fallback dessin de couverture si image absente */
+      background: linear-gradient(160deg, #1a3a5c 0%, #0d2135 100%);
+      position: relative;
+    }
+
+    /* Fausse couverture SVG inline si pas d'image */
+    .cover-fallback {
+      width: 220px;
+      height: 310px;
+      background: linear-gradient(160deg, #1a3a5c 0%, #0d2135 100%);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      box-shadow: 6px 10px 36px var(--shadow);
+      padding: 24px 16px;
+      text-align: center;
+      gap: 12px;
+    }
+
+    .cover-fallback-title {
+      font-family: 'Cinzel', serif;
+      font-size: 1.25rem;
+      color: #e8d9b8;
+      letter-spacing: 0.08em;
+      line-height: 1.3;
+    }
+
+    .cover-fallback-author {
+      font-family: 'Cormorant Garamond', serif;
+      font-style: italic;
+      font-size: 0.9rem;
+      color: #a89070;
+    }
+
+    .cover-fallback-line {
+      width: 40px; height: 1px;
+      background: var(--gold);
+      opacity: 0.6;
+    }
+
+    .cover-fallback-pub {
+      font-family: 'Cinzel', serif;
+      font-size: 0.62rem;
+      letter-spacing: 0.18em;
+      color: #8a7a60;
+      text-transform: uppercase;
+      margin-top: auto;
+    }
+
+    /* EAN badge */
+    .ean-badge {
+      font-family: 'Cinzel', serif;
+      font-size: 0.6rem;
+      letter-spacing: 0.12em;
+      color: var(--gold);
+      border: 1px solid rgba(200,150,62,0.35);
+      padding: 5px 14px;
+      text-transform: uppercase;
+    }
+
+    /* Babelio widget zone */
+    .babelio-widget {
+      margin-top: 4px;
+      min-height: 40px;
+    }
+
+    .widget-label {
+      font-family: 'Cinzel', serif;
+      font-size: 0.6rem;
+      letter-spacing: 0.2em;
+      color: var(--gold);
+      text-transform: uppercase;
+      margin: 12px 0 4px;
+    }
+
+    #BW_age_lecture, #BW_notes {
+      /* Le widget Babelio s'injectera ici */
+    }
+
+    /* ── NOTICE ── */
+    .notice {
+      display: flex;
+      flex-direction: column;
+      gap: 28px;
+    }
+
+    .notice-eyebrow {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+    }
+
+    .notice-eyebrow::after {
+      content: '';
+      flex: 1;
+      height: 1px;
+      background: linear-gradient(90deg, rgba(200,150,62,0.5), transparent);
+    }
+
+    .notice-eyebrow span {
+      font-family: 'Cinzel', serif;
+      font-size: 0.6rem;
+      letter-spacing: 0.3em;
+      color: var(--gold);
+      text-transform: uppercase;
+      white-space: nowrap;
+    }
+
+    h2.notice-title {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: clamp(2rem, 4vw, 3rem);
+      font-weight: 300;
+      font-style: italic;
+      line-height: 1.15;
+      color: var(--ink);
+    }
+
+    h2.notice-title strong {
+      font-weight: 600;
+      font-style: normal;
+      display: block;
+      font-size: 0.52em;
+      letter-spacing: 0.08em;
+      font-family: 'Cinzel', serif;
+      color: var(--rust);
+      margin-bottom: 6px;
+    }
+
+    .notice-meta {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px 20px;
+      font-size: 0.82rem;
+      color: rgba(26,18,8,0.6);
+      font-style: italic;
+    }
+
+    .notice-meta span {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .notice-meta span::before {
+      content: '◆';
+      font-size: 0.4em;
+      color: var(--gold);
+    }
+
+    .notice-synopsis {
+      font-size: 1.12rem;
+      line-height: 1.85;
+      color: rgba(26,18,8,0.82);
+      max-width: 620px;
+      border-left: 2px solid rgba(200,150,62,0.4);
+      padding-left: 22px;
+    }
+
+    /* EAN notice inline */
+    .ean-notice {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      font-family: 'Cinzel', serif;
+      font-size: 0.65rem;
+      letter-spacing: 0.15em;
+      color: rgba(26,18,8,0.45);
+      border-top: 1px solid rgba(200,150,62,0.25);
+      padding-top: 14px;
+    }
+
+    .ean-notice em {
+      font-style: normal;
+      color: var(--rust);
+      letter-spacing: 0.08em;
+    }
+
+    /* ── DIVIDER ── */
+    .ornament {
+      text-align: center;
+      margin: 60px 0 48px;
+      color: var(--gold);
+      font-size: 1.1rem;
+      opacity: 0.55;
+      letter-spacing: 0.4em;
+    }
+
+    /* ── EXTRAS GRID ── */
+    .extras {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: 1px;
+      background: rgba(200,150,62,0.2);
+      border: 1px solid rgba(200,150,62,0.2);
+      opacity: 0;
+      animation: fadeUp 0.9s 0.8s ease forwards;
+    }
+
+    .extra-card {
+      background: var(--cream);
+      padding: 30px 26px;
+      transition: background 0.25s;
+    }
+
+    .extra-card:hover { background: #fff; }
+
+    .extra-card h3 {
+      font-family: 'Cinzel', serif;
+      font-size: 0.68rem;
+      letter-spacing: 0.25em;
+      color: var(--gold);
+      text-transform: uppercase;
+      margin-bottom: 10px;
+    }
+
+    .extra-card p {
+      font-size: 0.95rem;
+      line-height: 1.7;
+      color: rgba(26,18,8,0.72);
+    }
+
+    /* ── FOOTER ── */
+    footer {
+      border-top: 1px solid rgba(200,150,62,0.25);
+      text-align: center;
+      padding: 30px 20px;
+      font-family: 'Cinzel', serif;
+      font-size: 0.58rem;
+      letter-spacing: 0.25em;
+      color: rgba(26,18,8,0.35);
+      text-transform: uppercase;
+    }
+
+    /* ── ANIMATIONS ── */
+    @keyframes fadeUp {
+      from { opacity: 0; transform: translateY(22px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+  </style>
+</head>
+<body>
+
+  <header>
+    <p class="site-label">Fiche de lecture</p>
+    <h1 class="header-title">L'Étranger</h1>
+    <p class="header-author">Albert Camus — 1942</p>
+  </header>
+
+  <main>
+    <article class="book-card">
+
+      <!-- Couverture -->
+      <aside class="cover-wrapper">
+        <div class="cover-frame">
+          <div class="cover-fallback">
+            <div class="cover-fallback-line"></div>
+            <p class="cover-fallback-title">L'Étranger</p>
+            <div class="cover-fallback-line"></div>
+            <p class="cover-fallback-author">Albert Camus</p>
+            <p class="cover-fallback-pub">Gallimard</p>
+          </div>
+        </div>
+
+        <span class="ean-badge">EAN&nbsp;9782070518425</span>
+
+        <!-- Widgets Babelio -->
+        <div class="babelio-widget">
+          <p class="widget-label">Âge de lecture</p>
+          <div id="BW_age_lecture"></div>
+          <p class="widget-label">Note</p>
+          <div id="BW_notes"></div>
+        </div>
+      </aside>
+
+      <!-- Notice bibliographique -->
+      <section class="notice">
+        <div class="notice-eyebrow"><span>Roman — Littérature française</span></div>
+
+        <h2 class="notice-title">
+          <strong>Albert Camus</strong>
+          L'Étranger
+        </h2>
+
+        <ul class="notice-meta">
+          <li><span>Gallimard, 1942</span></li>
+          <li><span>Collection Folio</span></li>
+          <li><span>ISBN 978-2-07-036024-5</span></li>
+          <li><span>EAN <em>9782070518425</em></span></li>
+          <li><span>185 pages</span></li>
+        </ul>
+
+        <p class="notice-synopsis">
+          Meursault, employé de bureau à Alger, apprend la mort de sa mère sans manifester le moindre chagrin apparent. Le lendemain de l'enterrement, il rencontre Marie et se lie à elle. Quelques jours plus tard, sous un soleil implacable, il tue un Arabe sur une plage. Arrêté, jugé, condamné à mort, Meursault découvre au seuil de l'exécution la « tendre indifférence du monde ».
+        </p>
+
+        <p class="notice-synopsis" style="border-left-color: rgba(139,58,42,0.3); font-style: italic; font-size:1rem;">
+          « Aujourd'hui, maman est morte. Ou peut-être hier, je ne sais pas. »
+        </p>
+
+        <p class="ean-notice">
+          Identifiant Babelio parsé par le widget&nbsp;:&nbsp;<em>9782070518425</em>
+        </p>
+      </section>
+    </article>
+
+    <div class="ornament">✦ &nbsp; ✦ &nbsp; ✦</div>
+
+    <!-- Cartes complémentaires -->
+    <div class="extras">
+      <div class="extra-card">
+        <h3>L'Absurde</h3>
+        <p>Camus inaugure avec ce roman sa philosophie de l'absurde : la confrontation entre le désir humain de sens et le silence irrationnel du monde.</p>
+      </div>
+      <div class="extra-card">
+        <h3>Prix Nobel</h3>
+        <p>Albert Camus reçoit le Prix Nobel de Littérature en 1957, à 44 ans — l'un des plus jeunes lauréats de l'histoire.</p>
+      </div>
+      <div class="extra-card">
+        <h3>Cycle de l'absurde</h3>
+        <p>L'Étranger s'inscrit dans un triptyque avec le recueil <em>Le Mythe de Sisyphe</em> et la pièce de théâtre <em>Caligula</em>.</p>
+      </div>
+      <div class="extra-card">
+        <h3>Héritage</h3>
+        <p>Traduit en plus de quarante langues, <em>L'Étranger</em> reste l'un des romans francophones les plus lus dans le monde entier.</p>
+      </div>
+    </div>
+  </main>
+
+  <footer>
+    <p>Fiche réalisée avec le widget Babelio &mdash; EAN 9782070518425</p>
+  </footer>
+
+  <!-- Script Babelio — doit rester en bas de page -->
+  <script type="text/javascript" src="https://www.babelio.com/bw_347.js"></script>
+</body>
+</html>
